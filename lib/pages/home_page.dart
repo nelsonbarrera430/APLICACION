@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'preguntas_page.dart';
 import 'resultados_page.dart';
+import 'community_page.dart'; // Importa la página de la comunidad
 import 'package:appwrite/appwrite.dart';
 import '../appwrite/constants.dart';
 import '../appwrite/auth_service.dart';
@@ -76,6 +77,16 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               child: const Text('Ver Resultados'),
+            ),
+            const SizedBox(height: 20), // Espacio para el nuevo botón
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CommunityPage()), // Navegar a CommunityPage
+                );
+              },
+              child: const Text('Comunidad'),
             ),
           ],
         ),
