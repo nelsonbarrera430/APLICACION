@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class PreguntasIAService {
-  final String _apiKey = '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';
+  final String _apiKey = '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';
   final String _url = 'https://openrouter.ai/api/v1/chat/completions';
 
   Future<List<String>> generarPreguntas() async {

@@ -4,46 +4,58 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:appwrite/appwrite.dart';
 import '../appwrite/results_service.dart';
-import 'package:intl/date_symbol_data_local.dart'; // Importa para la inicialización
+import 'package:intl/date_symbol_data_local.dart';
+import '../appwrite/auth_service.dart';
 
 class ResultadosPage extends StatefulWidget {
   final Client client;
-  final String userId;
 
-  const ResultadosPage({super.key, required this.client, required this.userId});
+  const ResultadosPage({Key? key, required this.client}) : super(key: key);
 
   @override
-  State<ResultadosPage> createState() => _ResultadosPageState();
+  _ResultadosPageState createState() => _ResultadosPageState();
 }
 
 class _ResultadosPageState extends State<ResultadosPage> {
-  List<Map<String, dynamic>> _historialResultados = [];
+  List<Map<String, dynamic>> _historialPromediosDiarios = [];
   bool _isLoading = true;
   String? _errorMessage;
   late final ResultsService _resultsService;
+  late final AuthService _authService;
+  String? _userId;
 
   @override
   void initState() {
     super.initState();
     _resultsService = ResultsService(client: widget.client);
-    // Inicializa la localización para español de Colombia
+    _authService = AuthService();
     initializeDateFormatting('es_CO', null).then((_) {
-      _cargarHistorialResultados();
+      _loadUserDataAndResults();
     });
   }
 
-  Future<void> _cargarHistorialResultados() async {
+  Future<void> _loadUserDataAndResults() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
     try {
-      _historialResultados = await _resultsService.cargarHistorialResultados(widget.userId);
-      print('Historial cargado: ${_historialResultados}');
+      final user = await _authService.getCurrentUser();
+      if (user == null) {
+        setState(() {
+          _errorMessage = 'No hay usuario logueado.';
+          _isLoading = false;
+        });
+        return;
+      }
+      _userId = user.$id;
+      final historial = await _resultsService.cargarHistorialResultados(_userId!);
+      _historialPromediosDiarios = historial;
+      print('Historial de promedios diarios cargado para el usuario $_userId: $_historialPromediosDiarios');
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error al cargar el historial de resultados: $e';
-        print('Error al cargar el historial: $e');
+        _errorMessage = 'Error al cargar el historial de promedios diarios: $e';
+        print('Error al cargar el historial de promedios diarios: $e');
       });
     } finally {
       setState(() {
@@ -53,38 +65,47 @@ class _ResultadosPageState extends State<ResultadosPage> {
   }
 
   String _generarOpcionesECharts() {
-    if (_historialResultados.isEmpty) {
+    if (_isLoading) {
       return jsonEncode({
-        'xAxis': {'type': 'category', 'data': []},
-        'yAxis': {'type': 'value'},
+        'title': {'text': 'Cargando datos...'},
         'series': [],
-        'title': {'text': 'Aún no hay resultados registrados'},
       });
     }
-
-    final xAxisData = _historialResultados.map((data) {
-      return DateFormat('EEE d', 'es_CO').format(DateTime.parse(data['fechaRegistro']));
+    if (_errorMessage != null) {
+      return jsonEncode({
+        'title': {'text': 'Error al cargar los datos'},
+        'series': [],
+      });
+    }
+    if (_historialPromediosDiarios.isEmpty) {
+      return jsonEncode({
+        'xAxis': {'type': 'category', 'data': []},
+        'yAxis': {'type': 'value', 'min': 1, 'max': 10},
+        'series': [],
+        'title': {'text': 'No hay datos de ansiedad registrados aún'},
+      });
+    }
+    final xAxisData = _historialPromediosDiarios.map((data) {
+      return data['diaSemana'] == null ? 'Sin Día' : data['diaSemana'] as String;
     }).toList();
-
-    final seriesData = _historialResultados.map((data) => data['resultado']).toList();
-
+    final seriesData = _historialPromediosDiarios.map((data) => (data['promedio'] as num?)?.toDouble().toStringAsFixed(2) ?? '0').toList();
     final options = {
-      'xAxis': {'type': 'category', 'data': xAxisData, 'name': 'Fecha'},
-      'yAxis': {'type': 'value', 'name': 'Resultado'},
+      'xAxis': {'type': 'category', 'data': xAxisData, 'name': 'Día'},
+      'yAxis': {'type': 'value', 'name': 'Promedio de Ansiedad (1-10)', 'min': 1, 'max': 10},
       'series': [
         {
-          'name': 'Resultado',
-          'type': 'line',
+          'name': 'Promedio Diario',
+          'type': 'bar',
           'data': seriesData,
           'itemStyle': {'color': '#007BFF'},
-          'lineStyle': {'width': 2},
           'label': {'show': true, 'position': 'top'},
         },
       ],
       'tooltip': {'trigger': 'axis'},
       'grid': {'left': '10%', 'right': '5%', 'bottom': '15%', 'containLabel': true},
+      'title': {'text': 'Historial de Ansiedad Diario'},
     };
-    print('Opciones ECharts generadas: ${jsonEncode(options)}');
+    print('Opciones ECharts (historial diario) para el usuario $_userId: ${jsonEncode(options)}');
     return jsonEncode(options);
   }
 
@@ -100,7 +121,7 @@ class _ResultadosPageState extends State<ResultadosPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             const Text(
-              'Tu Historial de Resultados',
+              'Historial de tu Nivel de Ansiedad Diario',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
@@ -110,17 +131,15 @@ class _ResultadosPageState extends State<ResultadosPage> {
                   ? const Center(child: CircularProgressIndicator())
                   : _errorMessage != null
                       ? Center(child: Text(_errorMessage!))
-                      : _historialResultados.isNotEmpty
-                          ? Echarts(
-                              option: _generarOpcionesECharts(),
-                            )
-                          : const Center(child: Text('No hay resultados para mostrar.')),
+                      : Echarts(
+                          option: _generarOpcionesECharts(),
+                        ),
             ),
             const SizedBox(height: 20),
             const Text(
-              'Tus resultados a lo largo del tiempo',
-              textAlign: TextAlign.center,
+              'Este gráfico muestra el promedio de tu nivel de ansiedad para cada día que completaste el cuestionario.',
               style: TextStyle(fontStyle: FontStyle.italic),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

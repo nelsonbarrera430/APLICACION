@@ -3,7 +3,8 @@ import 'login_page.dart';
 import 'preguntas_page.dart';
 import 'resultados_page.dart';
 import 'package:appwrite/appwrite.dart';
-import '../appwrite/constants.dart'; // Asegúrate de tener este import
+import '../appwrite/constants.dart';
+import '../appwrite/auth_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late final Client client;
   String? userId;
+  late final AuthService _authService;
 
   @override
   void initState() {
@@ -22,12 +24,19 @@ class _HomePageState extends State<HomePage> {
     client = Client()
         .setEndpoint(AppwriteConstants.endpoint)
         .setProject(AppwriteConstants.projectId);
-    // Aquí podrías obtener el userId si ya lo tienes disponible
-    // o pasarlo desde la página anterior. Para esta prueba, lo dejaremos null.
+    _authService = AuthService();
+    _loadCurrentUser();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final user = await _authService.getCurrentUser();
+    setState(() {
+      userId = user?.$id;
+    });
   }
 
   void _logout(BuildContext context) async {
-    // Simulamos un logout sin Appwrite en esta prueba
+    await _authService.logout();
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginPage()));
   }
 
@@ -43,25 +52,27 @@ class _HomePageState extends State<HomePage> {
           children: [
             const Text('Bienvenido al inicio'),
             const SizedBox(height: 20),
-            // Botón para navegar a la página de preguntas (PASANDO EL CLIENT)
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PreguntasPage(client: client, userId: userId ?? '')),
-                );
+                if (userId != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PreguntasPage(client: client, userId: userId!)),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Cargando información del usuario...')),
+                  );
+                }
               },
-              child: const Text('Ver preguntas de ansiedad'),
+              child: const Text('Realizar cuestionario de ansiedad'),
             ),
             const SizedBox(height: 20),
-            // Nuevo botón para navegar a la página de resultados (PASANDO EL CLIENT)
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => ResultadosPage(client: client, userId: userId ?? ''),
-                  ),
+                  MaterialPageRoute(builder: (context) => ResultadosPage(client: client)),
                 );
               },
               child: const Text('Ver Resultados'),

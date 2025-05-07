@@ -3,159 +3,180 @@ import 'package:appwrite/appwrite.dart';
 import '../appwrite/results_service.dart';
 import 'resultados_page.dart';
 import '../services/preguntas_ia_service.dart';
+import 'package:intl/intl.dart';
 
 class PreguntasPage extends StatefulWidget {
   final Client client;
   final String userId;
 
-  const PreguntasPage({super.key, required this.client, required this.userId});
+  const PreguntasPage({Key? key, required this.client, required this.userId})
+      : super(key: key);
 
   @override
-  State<PreguntasPage> createState() => _PreguntasPageState();
+  _PreguntasPageState createState() => _PreguntasPageState();
 }
 
 class _PreguntasPageState extends State<PreguntasPage> {
+  late Future<List<String>> _preguntasFuture;
   List<String> _preguntas = [];
-  List<int> _respuestas = [];
-  int _preguntaActual = 0;
+  List<int?> _respuestas = [];
+  int _preguntaActualIndex = 0;
+  double _respuestaActual = 5;
   late final ResultsService _resultsService;
-  final PreguntasIAService _iaService = PreguntasIAService();
-  bool _isLoading = true;
-  String? _errorMessage;
+  Future<bool>? _yaCompletoHoyFuture;
 
   @override
   void initState() {
     super.initState();
     _resultsService = ResultsService(client: widget.client);
-    _cargarPreguntasIA();
-  }
-
-  Future<void> _cargarPreguntasIA() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-    try {
-      final preguntasGeneradas = await _iaService.generarPreguntas();
-      setState(() {
-        _preguntas = preguntasGeneradas;
-        _respuestas = List.filled(_preguntas.length, 0);
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error al cargar las preguntas: $e';
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _responderPregunta(int nivel) {
-    setState(() {
-      _respuestas[_preguntaActual] = nivel;
-    });
-  }
-
-  void _siguientePregunta() {
-    if (_preguntaActual < _preguntas.length - 1) {
-      setState(() {
-        _preguntaActual++;
-      });
-    }
-  }
-
-  void _anteriorPregunta() {
-    if (_preguntaActual > 0) {
-      setState(() {
-        _preguntaActual--;
-      });
-    }
+    _preguntasFuture = PreguntasIAService().generarPreguntas();
+    _yaCompletoHoyFuture = _resultsService.yaCompletoCuestionarioHoy(widget.userId);
   }
 
   int _calcularPuntuacionTotal() {
-  return _respuestas.reduce((a, b) => a + b);
-}
+    return _respuestas.where((r) => r != null).fold(0, (sum, item) => sum + item!);
+  }
 
-  void _guardarYVerResultados() async {
-    int puntuacionTotal = _calcularPuntuacionTotal();
-    try {
-      await _resultsService.guardarResultado(widget.userId, puntuacionTotal);
-      print('Puntuación total guardada: $puntuacionTotal para el usuario ${widget.userId}');
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ResultadosPage(client: widget.client, userId: widget.userId),
-        ),
-      );
-    } catch (e) {
-      print('Error al guardar la puntuación: $e');
-      // Mostrar un mensaje de error al usuario si es necesario
+  void _responderPregunta() {
+    _respuestas.add(_respuestaActual.toInt());
+    if (_preguntaActualIndex < _preguntas.length - 1) {
+      setState(() {
+        _preguntaActualIndex++;
+        _respuestaActual = 5;
+      });
+    } else {
+      final puntuacionTotal = _calcularPuntuacionTotal();
+      final promedioDiario = _respuestas.isNotEmpty
+          ? puntuacionTotal / _respuestas.length.toDouble()
+          : 0.0;
+
+      if (promedioDiario.isNaN || promedioDiario.isInfinite) {
+        print(
+            'Error: Promedio inválido ($promedioDiario). No se guardarán los resultados.');
+        return;
+      }
+
+      print('Valor de promedioDiario antes de guardar: $promedioDiario');
+
+      final now = DateTime.now();
+      final diaSemana = DateFormat('EEEE', 'es_CO').format(now);
+      final fechaRegistro = now.toIso8601String();
+
+      _resultsService
+          .guardarPromedioDiario(
+              widget.userId, diaSemana, promedioDiario, fechaRegistro)
+          .then((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResultadosPage(client: widget.client),
+          ),
+        );
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(title: Text('Cargando Preguntas...')),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_errorMessage != null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Error')),
-        body: Center(child: Text('Error al cargar las preguntas: $_errorMessage')),
-      );
-    }
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Cuestionario de Ansiedad')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(
-              _preguntas[_preguntaActual],
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                const Text('Nada'),
-                ...List.generate(5, (index) => ElevatedButton(
-                      onPressed: () => _responderPregunta(index + 1),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _respuestas[_preguntaActual] == index + 1 ? Colors.blue : null,
+      appBar: AppBar(
+        title: const Text('Preguntas de Ansiedad'),
+      ),
+      body: FutureBuilder<bool>(
+        future: _yaCompletoHoyFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.data == true) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  'Ya has completado el cuestionario de ansiedad hoy. ¡Vuelve mañana!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            );
+          } else {
+            return FutureBuilder<List<String>>(
+              future: _preguntasFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No se generaron preguntas.'));
+                } else {
+                  _preguntas = snapshot.data!;
+                  if (_preguntas.isNotEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'Pregunta ${_preguntaActualIndex + 1}: ${_preguntas[_preguntaActualIndex]}',
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 20),
+                          Slider(
+                            value: _respuestaActual,
+                            min: 1,
+                            max: 10,
+                            divisions: 9,
+                            label: _respuestaActual.round().toString(),
+                            onChanged: (double value) {
+                              setState(() {
+                                _respuestaActual = value;
+                              });
+                            },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const <Widget>[
+                                Text('1 (Nada)'),
+                                Text('10 (Mucho)'),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          ElevatedButton(
+                            onPressed: _responderPregunta,
+                            child: Text(
+                              _preguntaActualIndex < _preguntas.length - 1 ? 'Siguiente Pregunta' : 'Ver Resultados',
+                            ),
+                          ),
+                          if (_preguntaActualIndex > 0)
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _preguntaActualIndex--;
+                                  _respuestaActual = _respuestas[_preguntaActualIndex]!.toDouble() ?? 5;
+                                  _respuestas.removeLast();
+                                });
+                              },
+                              child: const Text('Anterior'),
+                            ),
+                        ],
                       ),
-                      child: Text('${index + 1}'),
-                    )),
-                const Text('Mucho'),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (_preguntaActual > 0)
-                  ElevatedButton(onPressed: _anteriorPregunta, child: const Text('Anterior')),
-                Text('Pregunta ${_preguntaActual + 1}/${_preguntas.length}'),
-                if (_preguntaActual < _preguntas.length - 1)
-                  ElevatedButton(onPressed: _siguientePregunta, child: const Text('Siguiente')),
-              ],
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _respuestas.every((r) => r > 0) ? _guardarYVerResultados : null,
-              child: const Text('Guardar y Ver Resultados'),
-            ),
-          ],
-        ),
+                    );
+                  } else {
+                    return const Center(child: Text('No hay preguntas para mostrar.'));
+                  }
+                }
+              },
+            );
+          }
+        },
       ),
     );
   }
 }
+
