@@ -4,7 +4,8 @@ import 'preguntas_page.dart';
 import 'resultados_page.dart';
 import 'community_page.dart';
 import 'breathing_exercise_page.dart';
-import 'chatbot_page.dart'; // Importa la pantalla del chatbot
+import 'chatbot_page.dart';
+import 'ejercicio_page.dart'; // Importa la nueva página de ejercicios
 import 'package:appwrite/appwrite.dart';
 import '../appwrite/constants.dart';
 import '../appwrite/auth_service.dart';
@@ -100,15 +101,25 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text('Respiración Rápida'),
             ),
-            const SizedBox(height: 20), // Espacio para el botón del chatbot
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ChatbotScreen()), // Navegar a ChatbotScreen
+                  MaterialPageRoute(builder: (context) => const ChatbotScreen()),
                 );
               },
               child: const Text('CHIP - Asistente'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EjercicioPage()), // Navegar a EjerciciosPage
+                );
+              },
+              child: const Text('Ver Todos los Ejercicios'),
             ),
           ],
         ),

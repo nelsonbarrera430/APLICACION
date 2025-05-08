@@ -15,6 +15,10 @@ dependencies:
   flutter_echarts: ^2.0.5
   intl: ^0.19.0 # Añadida la dependencia intl
   image_picker: ^1.0.7 # Añadida la dependencia image_picker
+  cached_network_image: ^3.2.3 # Añade esta línea para cached_network_image
+  extended_image: ^10.0.1
+  visibility_detector: ^0.4.0+2 # Usa la versión más reciente
+  
 
 dev_dependencies:
   flutter_test:

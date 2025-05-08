@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:appwrite/appwrite.dart';
 import '../appwrite/community_service.dart';
 import '../appwrite/auth_service.dart'; 
-import '../appwrite/constants.dart';// Para obtener el ID del usuario
+import '../appwrite/constants.dart';
 
 class CreatePostPage extends StatefulWidget {
   const CreatePostPage({super.key});
