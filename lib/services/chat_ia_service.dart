@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ChatIAService {
-  final String _apiKey = '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';
+  final String _apiKey = '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';
   final String _url = 'https://openrouter.ai/api/v1/chat/completions';
   final String _model = "deepseek/deepseek-r1-distill-llama-70b:free";
   final String _httpReferer = 'https://tuapp.com';

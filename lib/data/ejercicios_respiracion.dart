@@ -1,3 +1,5 @@
+// archivo: data/ejercicios_respiracion.dart
+
 import '../models/ejercicio_respiracion.dart';
 
 const List<Map<String, dynamic>> _ejerciciosData = [

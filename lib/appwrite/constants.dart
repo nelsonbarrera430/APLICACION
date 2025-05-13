@@ -6,5 +6,6 @@ class AppwriteConstants {
   static const String graphicsCollectionId = '6819a041000c716f84b9';
   static const String postsCollectionId = '681aba19002b57c6fbac';
   static const String commentsCollectionId = '681abb110035573bad4a';
-  static const String likesCollectionId = '681ac5cd001ab4e4c893'; // ID de la colección "likes"
+  static const String likesCollectionId = '681ac5cd001ab4e4c893';
+  static const String storageBucketId ='681d652600364d1b43d0'; // Added bucket ID
 }

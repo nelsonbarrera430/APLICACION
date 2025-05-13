@@ -18,7 +18,6 @@ dependencies:
   cached_network_image: ^3.2.3 # Añade esta línea para cached_network_image
   extended_image: ^10.0.1
   visibility_detector: ^0.4.0+2 # Usa la versión más reciente
-  
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +29,5 @@ dependency_overrides:
 
 flutter:
   uses-material-design: true
+  assets:
+  - assets/images/chip.png # Asegúrate de que la ruta sea correcta

@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../appwrite/community_service.dart';
-import '../pages/post_detail_page.dart'; // Importa la página de detalles
+import '../pages/post_detail_page.dart';
 
 class PostCard extends StatefulWidget {
   final Map<String, dynamic>? post;
   final String? currentUserId;
   final CommunityService communityService;
 
-  const PostCard({Key? key, required this.post, required this.currentUserId, required this.communityService}) : super(key: key);
+  const PostCard({
+    Key? key,
+    required this.post,
+    required this.currentUserId,
+    required this.communityService,
+  }) : super(key: key);
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -17,19 +22,19 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   int _likeCount = 0;
   bool _isLikedByUser = false;
-  int _commentCount = 0; // Nuevo contador para comentarios
+  int _commentCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadLikeCount();
     _checkIfLikedByUser();
-    _loadCommentCount(); // Cargar el conteo inicial de comentarios
+    _loadCommentCount();
   }
 
   Future<void> _loadLikeCount() async {
     if (widget.post?['\$id'] != null) {
-      final count = await widget.communityService.getLikesCount(widget.post!['\$id'] as String);
+      final count = await widget.communityService.getLikesCount(widget.post!['\$id']);
       setState(() {
         _likeCount = count;
       });
@@ -38,7 +43,7 @@ class _PostCardState extends State<PostCard> {
 
   Future<void> _loadCommentCount() async {
     if (widget.post?['\$id'] != null) {
-      final count = await widget.communityService.getCommentsCount(widget.post!['\$id'] as String);
+      final count = await widget.communityService.getCommentsCount(widget.post!['\$id']);
       setState(() {
         _commentCount = count;
       });
@@ -47,7 +52,7 @@ class _PostCardState extends State<PostCard> {
 
   Future<void> _checkIfLikedByUser() async {
     if (widget.post?['\$id'] != null && widget.currentUserId != null) {
-      final liked = await widget.communityService.hasLiked(widget.currentUserId!, widget.post!['\$id'] as String);
+      final liked = await widget.communityService.hasLiked(widget.currentUserId!, widget.post!['\$id']);
       setState(() {
         _isLikedByUser = liked;
       });
@@ -57,76 +62,76 @@ class _PostCardState extends State<PostCard> {
   Future<void> _handleLike() async {
     if (widget.post?['\$id'] != null && widget.currentUserId != null) {
       if (_isLikedByUser) {
-        await widget.communityService.removeLike(widget.currentUserId!, widget.post!['\$id'] as String);
+        await widget.communityService.removeLike(widget.currentUserId!, widget.post!['\$id']);
         setState(() {
           _isLikedByUser = false;
           _likeCount--;
         });
       } else {
-        await widget.communityService.giveLike(widget.currentUserId!, widget.post!['\$id'] as String);
+        await widget.communityService.giveLike(widget.currentUserId!, widget.post!['\$id']);
         setState(() {
           _isLikedByUser = true;
           _likeCount++;
         });
       }
-    } else {
-      print('No se pudo dar/quitar like: postId o currentUserId es nulo');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.post == null) {
-      return const Card(child: Padding(padding: EdgeInsets.all(8.0), child: Text('Publicación no disponible')));
+      return const Card(color: Color(0xFF2A2A2A), child: Padding(padding: EdgeInsets.all(8.0), child: Text('Post no disponible', style: TextStyle(color: Colors.white))));
     }
 
-    final userId = widget.post!['userId'] as String? ?? 'Usuario Desconocido';
-    final text = widget.post!['text'] as String? ?? '';
-    final imageUrl = widget.post!['imageUrl'] as String?;
-    final createdAt = widget.post!['createdAt'] as String?;
+    final userId = widget.post!['userId'] ?? 'Usuario';
+    final text = widget.post!['text'] ?? '';
+    final imageUrl = widget.post!['imageUrl'];
+    final createdAt = widget.post!['createdAt'];
     final formattedDate = createdAt != null
         ? DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(createdAt).toLocal())
-        : 'Fecha Desconocida';
-    final postId = widget.post!['\$id'] as String?;
+        : 'Desconocido';
+    final postId = widget.post!['\$id'];
 
     return Card(
-      margin: const EdgeInsets.all(8.0),
+      color: const Color(0xFF2A2A2A),
+      elevation: 2.0,
+      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(14.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Publicado por: $userId',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            Text(text),
+          children: [
+            Text('u/$userId', style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6.0),
+            Text(text, style: const TextStyle(color: Colors.white, fontSize: 15)),
             if (imageUrl != null && imageUrl.isNotEmpty) ...[
-              const SizedBox(height: 8.0),
-              Image.network(
-                imageUrl,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Text('Error al cargar la imagen');
-                },
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    print('Error al cargar la imagen desde URL: $imageUrl - Error: $error'); // Imprime el error
+                    return const Text('Error al cargar imagen', style: TextStyle(color: Colors.redAccent));
+                  },
+                ),
               ),
             ],
-            const SizedBox(height: 8.0),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Publicado el: $formattedDate', style: const TextStyle(fontSize: 12.0, color: Colors.grey)),
+              children: [
+                Text(formattedDate, style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 Row(
-                  children: <Widget>[
+                  children: [
                     IconButton(
-                      icon: Icon(_isLikedByUser ? Icons.thumb_up : Icons.thumb_up_outlined),
+                      icon: Icon(_isLikedByUser ? Icons.thumb_up : Icons.thumb_up_outlined, color: Colors.orangeAccent),
                       onPressed: _handleLike,
                     ),
-                    const SizedBox(width: 4.0),
-                    Text('$_likeCount'),
-                    const SizedBox(width: 8.0),
+                    Text('$_likeCount', style: const TextStyle(color: Colors.white)),
+                    const SizedBox(width: 10),
                     GestureDetector(
                       onTap: () {
                         if (postId != null) {
@@ -134,15 +139,15 @@ class _PostCardState extends State<PostCard> {
                         }
                       },
                       child: Row(
-                        children: <Widget>[
-                          const Icon(Icons.comment_outlined),
-                          const SizedBox(width: 4.0),
-                          Text('$_commentCount'),
+                        children: [
+                          const Icon(Icons.comment_outlined, color: Colors.orangeAccent),
+                          const SizedBox(width: 4),
+                          Text('$_commentCount', style: const TextStyle(color: Colors.white)),
                         ],
                       ),
                     ),
                   ],
-                ),
+                )
               ],
             ),
           ],
@@ -162,10 +167,7 @@ class _PostCardState extends State<PostCard> {
       ),
     );
     if (result == true) {
-      // Si se devolvió true desde PostDetailPage (indicando un nuevo comentario), recargar el conteo
       _loadCommentCount();
-      // También podríamos recargar la lista completa de posts si es necesario para otras actualizaciones
-      // Navigator.of(context).findAncestorStateOfType<_CommunityPageState>()?._refreshPosts();
     }
   }
 }

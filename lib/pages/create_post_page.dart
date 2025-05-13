@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:appwrite/appwrite.dart';
 import '../appwrite/community_service.dart';
-import '../appwrite/auth_service.dart'; 
+import '../appwrite/auth_service.dart';
 import '../appwrite/constants.dart';
 
 class CreatePostPage extends StatefulWidget {
@@ -54,20 +54,19 @@ class _CreatePostPageState extends State<CreatePostPage> {
     }
 
     final text = _textController.text.trim();
-    if (text.isEmpty && _selectedImage == null) {
+    String? imageUrl;
+
+    if (_selectedImage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subiendo imagen...')));
+      imageUrl = await _communityService.uploadImage(_selectedImage!);
+      if (imageUrl == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al subir la imagen.')));
+        return;
+      }
+      print('URL de la imagen subida: $imageUrl');
+    } else if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('La publicación debe tener texto o una imagen.')));
       return;
-    }
-
-    String? imageUrl;
-    if (_selectedImage != null) {
-      // Aquí implementaríamos la lógica para subir la imagen a Appwrite Storage
-      // y obtener la URL. Por ahora, lo dejaremos como null.
-      print('Subiendo imagen: ${_selectedImage!.path}');
-      // Después de subir la imagen y obtener la URL, la asignamos a imageUrl
-      // imageUrl = 'URL_DE_LA_IMAGEN_SUBIDA';
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subida de imágenes no implementada aún.')));
-      return; // Por ahora, no permitimos subir imágenes
     }
 
     final post = await _communityService.createPost(_userId!, text, imageUrl);

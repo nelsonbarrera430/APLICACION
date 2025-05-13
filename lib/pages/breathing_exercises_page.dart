@@ -22,7 +22,7 @@ class _BreathingExercisesPageState extends State<BreathingExercisesPage> {
     }
   }
 
-  // Función que modifica la URL del GIF para forzar recarga
+  
   void _resetGif(int index) {
     setState(() {
       gifUrls[index] =
@@ -62,7 +62,7 @@ class _BreathingExercisesPageState extends State<BreathingExercisesPage> {
                   ),
                   const SizedBox(height: 12),
                   Image.network(
-                    gifUrls[index]!, // usamos la URL modificada
+                    gifUrls[index]!, 
                     height: 300,
                     width: double.infinity,
                     fit: BoxFit.contain,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import '../appwrite/community_service.dart';
 import '../appwrite/auth_service.dart'; // Importa AuthService
@@ -17,13 +16,13 @@ class PostDetailPage extends StatefulWidget {
 class _PostDetailPageState extends State<PostDetailPage> {
   late Future<List<Document>> _commentsFuture;
   final TextEditingController _commentController = TextEditingController();
-  final AuthService _authService = AuthService(); // Instancia de AuthService
-  String? _currentUserId; // Para almacenar el ID del usuario actual
+  final AuthService _authService = AuthService(); 
+  String? _currentUserId; 
 
   @override
   void initState() {
     super.initState();
-    _loadCurrentUser(); // Cargar el usuario actual
+    _loadCurrentUser(); 
     _commentsFuture = widget.communityService.getCommentsForPost(widget.postId);
   }
 
@@ -37,14 +36,14 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Future<void> _createComment() async {
     if (_currentUserId != null && _commentController.text.isNotEmpty) {
       await widget.communityService.createComment(widget.postId, _currentUserId!, _commentController.text);
-      _commentController.clear(); // Limpiar el campo de texto
-      // Recargar los comentarios para mostrar el nuevo
+      _commentController.clear(); 
+      
       setState(() {
         _commentsFuture = widget.communityService.getCommentsForPost(widget.postId);
       });
-      // Informar a la PostCard que hubo un nuevo comentario
+      
       if (mounted && Navigator.of(context).canPop()) {
-        Navigator.of(context).pop(true); // Devolver true para indicar que hubo un cambio
+        Navigator.of(context).pop(true); 
       }
     }
   }
@@ -89,7 +88,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
               },
             ),
           ),
-          // Sección para crear nuevos comentarios
+          
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(

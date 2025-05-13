@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/breathing_timer.dart';
+import '../widgets/circular_breathing_design.dart'; // Importa el nuevo diseño
 
 class BreathingExercisePage extends StatefulWidget {
   @override
@@ -56,7 +57,7 @@ class _BreathingExercisePageState extends State<BreathingExercisePage> {
       _hasFinished = false;
       _breathText = _breathingSteps.first;
       _progress = 0.0;
-      _timeRemaining = 0;
+      _timeRemaining = _breathingTimer.stepDurationSeconds;
     });
     _breathingTimer.start();
   }
@@ -73,58 +74,14 @@ class _BreathingExercisePageState extends State<BreathingExercisePage> {
       appBar: AppBar(
         title: Text('Ejercicio de Respiración'),
         centerTitle: true,
+        backgroundColor: Colors.black87, // Fondo oscuro para el AppBar
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (!_isRunning && !_hasFinished) ...[
-                ElevatedButton(
-                  onPressed: _startBreathing,
-                  child: Text('¿Quieres respirar?'),
-                  style: ElevatedButton.styleFrom(
-                    textStyle: TextStyle(fontSize: 20),
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  ),
-                ),
-              ] else if (_isRunning) ...[
-                Text(
-                  _breathText,
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 24),
-                LinearProgressIndicator(
-                  value: _progress,
-                  minHeight: 12,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-                ),
-                SizedBox(height: 12),
-                Text(
-                  'Tiempo restante: $_timeRemaining s',
-                  style: TextStyle(fontSize: 18, color: Colors.grey[700]),
-                ),
-              ] else if (_hasFinished) ...[
-                Text(
-                  _breathText,
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
-                ),
-                SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _startBreathing,
-                  child: Text('¿Quieres intentarlo de nuevo?'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    textStyle: TextStyle(fontSize: 18),
-                    padding: EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
+      body: CircularBreathingDesign(
+        isRunning: _isRunning,
+        breathText: _breathText,
+        progress: _progress,
+        timeRemaining: _timeRemaining,
+        onStartBreathing: _startBreathing,
       ),
     );
   }

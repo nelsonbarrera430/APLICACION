@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/models.dart'; // Importa directamente Document
+import 'package:appwrite/models.dart';
+import 'dart:io' as io;
 import '../appwrite/constants.dart';
 
 class CommunityService {
@@ -14,8 +15,9 @@ class CommunityService {
 
   String get postsCollectionId => AppwriteConstants.postsCollectionId;
   String get commentsCollectionId => AppwriteConstants.commentsCollectionId;
-  String get likesCollectionId => AppwriteConstants.likesCollectionId; // Agregamos esto
+  String get likesCollectionId => AppwriteConstants.likesCollectionId;
 
+  // Obtener publicaciones ordenadas por fecha de creación
   Future<List<Document>> getPosts() async {
     try {
       final response = await _databases.listDocuments(
@@ -32,6 +34,7 @@ class CommunityService {
     }
   }
 
+  // Crear una nueva publicación
   Future<Document?> createPost(String userId, String text, String? imageUrl) async {
     try {
       final response = await _databases.createDocument(
@@ -45,9 +48,9 @@ class CommunityService {
           'createdAt': DateTime.now().toIso8601String(),
         },
         permissions: [
-          Permission.read(Role.any()), // Todos pueden leer
-          Permission.update(Role.user(userId)), // Solo el creador puede actualizar
-          Permission.delete(Role.user(userId)), // Solo el creador puede eliminar
+          Permission.read(Role.any()),
+          Permission.update(Role.user(userId)),
+          Permission.delete(Role.user(userId)),
         ],
       );
       return response;
@@ -57,6 +60,7 @@ class CommunityService {
     }
   }
 
+  // Obtener comentarios para una publicación
   Future<List<Document>> getCommentsForPost(String postId) async {
     try {
       final response = await _databases.listDocuments(
@@ -74,6 +78,7 @@ class CommunityService {
     }
   }
 
+  // Obtener conteo de comentarios
   Future<int> getCommentsCount(String postId) async {
     try {
       final response = await _databases.listDocuments(
@@ -81,7 +86,7 @@ class CommunityService {
         collectionId: commentsCollectionId,
         queries: [
           Query.equal('postId', postId),
-          Query.limit(1000), // Ajusta el límite si esperas muchísimos comentarios
+          Query.limit(1000),
         ],
       );
       return response.total;
@@ -91,6 +96,7 @@ class CommunityService {
     }
   }
 
+  // Crear comentario
   Future<Document?> createComment(String postId, String userId, String text) async {
     try {
       final response = await _databases.createDocument(
@@ -116,11 +122,12 @@ class CommunityService {
     }
   }
 
-  Future<Document?> giveLike(String userId, String postId) async { // Método para dar like
+  // Dar like
+  Future<Document?> giveLike(String userId, String postId) async {
     try {
       final response = await _databases.createDocument(
         databaseId: AppwriteConstants.databaseId,
-        collectionId: AppwriteConstants.likesCollectionId,
+        collectionId: likesCollectionId,
         documentId: ID.unique(),
         data: {
           'userId': userId,
@@ -128,8 +135,8 @@ class CommunityService {
           'createdAt': DateTime.now().toIso8601String(),
         },
         permissions: [
-          Permission.read(Role.any()), // Cualquiera puede leer el like (para contar)
-          Permission.delete(Role.user(userId)), // Solo el creador puede eliminar su like
+          Permission.read(Role.any()),
+          Permission.delete(Role.user(userId)),
         ],
       );
       return response;
@@ -139,14 +146,15 @@ class CommunityService {
     }
   }
 
-  Future<int> getLikesCount(String postId) async { // Método para obtener el conteo de likes
+  // Contar likes
+  Future<int> getLikesCount(String postId) async {
     try {
       final response = await _databases.listDocuments(
         databaseId: AppwriteConstants.databaseId,
         collectionId: likesCollectionId,
         queries: [
           Query.equal('postId', postId),
-          Query.limit(1000), // Puedes ajustar el límite si esperas muchísimos likes
+          Query.limit(1000),
         ],
       );
       return response.total;
@@ -156,6 +164,7 @@ class CommunityService {
     }
   }
 
+  // Verificar si ya dio like
   Future<bool> hasLiked(String userId, String postId) async {
     try {
       final response = await _databases.listDocuments(
@@ -174,6 +183,7 @@ class CommunityService {
     }
   }
 
+  // Remover like
   Future<void> removeLike(String userId, String postId) async {
     try {
       final response = await _databases.listDocuments(
@@ -195,11 +205,31 @@ class CommunityService {
       }
     } catch (e) {
       print('Error al remover el like: $e');
-      return null;
     }
   }
 
+  // Obtener URL para visualizar archivo
   String getFileViewUrl(String fileId) {
-    return '${AppwriteConstants.endpoint}/storage/buckets/default/files/$fileId/view?project=${AppwriteConstants.projectId}';
+    return '${AppwriteConstants.endpoint}/storage/buckets/${AppwriteConstants.storageBucketId}/files/$fileId/view?project=${AppwriteConstants.projectId}';
+  }
+
+  // Subir imagen al bucket de almacenamiento
+  Future<String?> uploadImage(io.File image) async {
+    print('Tipo del objeto "image" en uploadImage: ${image.runtimeType}');
+    try {
+      final file = await _storage.createFile(
+        bucketId: AppwriteConstants.storageBucketId,
+        fileId: ID.unique(),
+        file: InputFile.fromPath(
+          path: image.path,
+          filename: image.path.split('/').last,
+        ),
+      );
+
+      return '${AppwriteConstants.endpoint}/storage/buckets/${file.bucketId}/files/${file.$id}/view?project=${AppwriteConstants.projectId}';
+    } catch (e) {
+      print('Error al subir la imagen: $e');
+      return null;
+    }
   }
 }
