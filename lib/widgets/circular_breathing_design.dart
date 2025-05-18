@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 class CircularBreathingDesign extends StatelessWidget {
   final bool isRunning;
@@ -8,12 +7,12 @@ class CircularBreathingDesign extends StatelessWidget {
   final int timeRemaining;
   final VoidCallback onStartBreathing;
 
-  static const Color colorAzulOscuro1 = Color.fromARGB(179, 0, 0, 0);   // Azul oscuro con opacidad
-  static const Color colorAzulOscuro2 = Color.fromARGB(179, 0, 0, 0);   // Azul oscuro ligeramente más claro con opacidad
-  static const Color colorAzulMedio = Color.fromARGB(179, 255, 255, 255);    // Azul medio con opacidad
-  static const Color colorNegroProfundo = Color(0xFF000000);   // Negro profundo (inicio del degradado)
-  static const Color colorMoradoOscuroDegradado = Color(0xFF30193D); // Morado oscuro (fin del degradado)
-  static const Color colorBotonEmpezarElegante = Color(0xFF304FFE); // Azul oscuro para el botón
+  // Paleta de colores nueva
+  static const Color colorNegro = Color(0xFF000000);
+  static const Color colorMorado = Color(0xFF2C003E);
+  static const Color colorTomate = Color.fromARGB(255, 123, 45, 3); // Tomate
+  static const Color colorFucsia = Color.fromARGB(255, 127, 44, 2); // Acento fucsia
+  static const Color colorBlancoTransparente = Color(0xAAFFFFFF);
 
   const CircularBreathingDesign({
     Key? key,
@@ -26,22 +25,14 @@ class CircularBreathingDesign extends StatelessWidget {
 
   double _calculateCircleScale(String step, double progress) {
     if (!isRunning) return 1.0;
-    if (step == 'Inhala') {
-      return 1.0 + 0.2 * progress;
-    } else if (step == 'Exhala') {
-      return 1.2 - 0.2 * progress;
-    } else {
-      return 1.1; // Para 'Mantén'
-    }
+    if (step == 'Inhala') return 1.0 + 0.3 * progress;
+    if (step == 'Exhala') return 1.3 - 0.3 * progress;
+    return 1.15;
   }
 
   Color _getCircleColor(int index) {
-    const colors = [
-      colorAzulOscuro1,
-      colorAzulOscuro2,
-      colorAzulMedio,
-    ];
-    return colors[(colors.length - 1 - index) % colors.length]; // Invertir el orden para el exterior más oscuro
+    if (index == 2) return colorTomate;
+    return index == 0 ? colorNegro : colorMorado;
   }
 
   String _formatTime(int seconds) {
@@ -54,64 +45,91 @@ class CircularBreathingDesign extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              colorNegroProfundo,
-              colorMoradoOscuroDegradado,
-            ],
+            colors: [colorNegro, colorMorado],
           ),
         ),
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Círculos concéntricos
+            // Círculo exterior
             AnimatedScale(
               scale: _calculateCircleScale(breathText, progress),
               duration: const Duration(milliseconds: 200),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.width * 0.7,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _getCircleColor(0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorFucsia.withOpacity(0.5),
+                      blurRadius: 25,
+                      spreadRadius: 10,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Círculo intermedio
+            AnimatedScale(
+              scale: _calculateCircleScale(breathText, progress) * 0.85,
+              duration: const Duration(milliseconds: 250),
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.6,
                 height: MediaQuery.of(context).size.width * 0.6,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: _getCircleColor(0),
-                ),
-              ),
-            ),
-            AnimatedScale(
-              scale: _calculateCircleScale(breathText, progress) * 0.8,
-              duration: const Duration(milliseconds: 250),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                height: MediaQuery.of(context).size.width * 0.5,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
                   color: _getCircleColor(1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorFucsia.withOpacity(0.4),
+                      blurRadius: 20,
+                      spreadRadius: 8,
+                    ),
+                  ],
                 ),
               ),
             ),
+            // Círculo central
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: MediaQuery.of(context).size.width * 0.4,
-              height: MediaQuery.of(context).size.width * 0.4,
+              width: MediaQuery.of(context).size.width * 0.45,
+              height: MediaQuery.of(context).size.width * 0.45,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _getCircleColor(2),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorFucsia.withOpacity(0.6),
+                    spreadRadius: 6,
+                    blurRadius: 18,
+                  ),
+                ],
               ),
               child: Center(
                 child: Text(
                   breathText,
-                  style: TextStyle(
-                    fontSize: 24,
+                  style: const TextStyle(
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: colorBlancoTransparente,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 6,
+                        color: Colors.black,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            // Temporizador y control
+            // Temporizador y slider
             Positioned(
               bottom: 40,
               left: 20,
@@ -120,45 +138,48 @@ class CircularBreathingDesign extends StatelessWidget {
                 children: [
                   Text(
                     _formatTime(timeRemaining),
-                    style: TextStyle(fontSize: 18, color: Colors.white70),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: colorBlancoTransparente,
+                    ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   SliderTheme(
                     data: SliderTheme.of(context).copyWith(
-                      trackHeight: 5,
-                      activeTrackColor: colorAzulMedio,
+                      trackHeight: 6,
+                      activeTrackColor: colorTomate,
                       inactiveTrackColor: Colors.grey.shade800,
-                      thumbColor: Colors.white,
-                      overlayColor: Colors.white.withOpacity(0.3),
-                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
-                      overlayShape: RoundSliderOverlayShape(overlayRadius: 14.0),
-                      // Personalización adicional para que se vea más como una barra
-                      tickMarkShape: RoundSliderTickMarkShape(),
-                      inactiveTickMarkColor: Colors.transparent,
-                      activeTickMarkColor: Colors.transparent,
+                      thumbColor: colorFucsia,
+                      overlayColor: colorFucsia.withOpacity(0.3),
+                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10.0),
+                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 18.0),
                     ),
                     child: Slider(
                       value: progress,
-                      onChanged: (double value) {
-                        // Puedes implementar lógica para controlar el tiempo aquí si lo deseas
-                      },
+                      onChanged: (_) {},
                     ),
                   ),
                 ],
               ),
             ),
-            // Botón de inicio si no está corriendo
+            // Botón de inicio
             if (!isRunning)
               ElevatedButton(
                 onPressed: onStartBreathing,
-                child: Text('Empezar', style: TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  backgroundColor: colorBotonEmpezarElegante,
+                  padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 18),
+                  backgroundColor: colorFucsia,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
+                    side: const BorderSide(color: colorTomate, width: 2),
                   ),
+                  elevation: 5,
+                  shadowColor: Colors.black,
+                ),
+                child: const Text(
+                  'Empezar',
+                  style: TextStyle(fontSize: 20),
                 ),
               ),
           ],

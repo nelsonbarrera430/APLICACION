@@ -32,18 +32,22 @@ class ResultadosContenido extends StatelessWidget {
     );
     final chartOptions = chartOptionsGenerator.generarOpcionesECharts();
 
-    return Padding(
+    return Container(
+      color: Colors.black, // Fondo negro
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           const HistorialAnsiedadTitulo(),
           const SizedBox(height: 20),
+          const SizedBox(height: 20), // Este empuja el gráfico un poco hacia abajo
           Expanded(
-            child: AnsiedadChart(
-              chartOptions: chartOptions,
-              isLoading: isLoading,
-              errorMessage: errorMessage,
+            child: Center(
+              child: AnsiedadChart(
+                chartOptions: chartOptions,
+                isLoading: isLoading,
+                errorMessage: errorMessage,
+              ),
             ),
           ),
           const SizedBox(height: 20),

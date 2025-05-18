@@ -6,7 +6,6 @@ import '../data/ejercicios_respiracion.dart';
 import '../models/ejercicio_respiracion.dart';
 import 'breathing_exercises_page.dart';
 import 'emergency_page.dart';
-import '../widgets/resultados_appbar.dart';
 import '../widgets/resultados_contenido.dart';
 
 class ResultadosPage extends StatefulWidget {
@@ -118,7 +117,7 @@ class _ResultadosPageState extends State<ResultadosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const ResultadosAppBar(),
+      // Aquí eliminé el appBar
       body: ResultadosContenido(
         historialPromediosDiarios: _historialPromediosDiarios,
         isLoading: _isLoading,

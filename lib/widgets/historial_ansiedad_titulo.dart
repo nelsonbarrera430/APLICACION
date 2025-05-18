@@ -7,7 +7,11 @@ class HistorialAnsiedadTitulo extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Text(
       'Historial de tu Nivel de Ansiedad Diario',
-      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: Colors.white, // Letras blancas
+      ),
       textAlign: TextAlign.center,
     );
   }

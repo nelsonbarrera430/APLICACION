@@ -11,13 +11,20 @@ class AnsiedadInfo extends StatelessWidget {
       children: [
         Text(
           'Tu puntaje de ansiedad promedio es: $puntajeAnsiedad',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: Color.fromARGB(255, 255, 255, 255), 
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
         const Text(
           'Este gráfico muestra el promedio de tu nivel de ansiedad para cada día que completaste el cuestionario.',
-          style: TextStyle(fontStyle: FontStyle.italic),
+          style: TextStyle(
+            fontStyle: FontStyle.italic,
+            color: Colors.white, 
+          ),
           textAlign: TextAlign.center,
         ),
       ],

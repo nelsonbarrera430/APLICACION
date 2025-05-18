@@ -125,7 +125,7 @@ class CategoryGrid extends StatelessWidget {
         return ElevatedButton(
           onPressed: () => onCategoryTap(category['name'] as String), // Aseguramos el tipo String
           style: ElevatedButton.styleFrom(
-            backgroundColor: category['name'] == 'Cerrar sesión' ? Colors.red : Colors.blueGrey,
+            backgroundColor: category['name'] == 'Cerrar sesión' ? Colors.red : const Color.fromARGB(255, 77, 30, 0),
             foregroundColor: category['name'] == 'Cerrar sesión' ? Colors.white : null,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),

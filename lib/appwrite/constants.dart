@@ -8,4 +8,5 @@ class AppwriteConstants {
   static const String commentsCollectionId = '681abb110035573bad4a';
   static const String likesCollectionId = '681ac5cd001ab4e4c893';
   static const String storageBucketId ='681d652600364d1b43d0'; // Added bucket ID
+  static const String emergencyCollectionId = '68294a54000b287db588'; // Added emergency collection ID
 }

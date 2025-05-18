@@ -18,6 +18,8 @@ dependencies:
   cached_network_image: ^3.2.3 # Añade esta línea para cached_network_image
   extended_image: ^10.0.1
   visibility_detector: ^0.4.0+2 # Usa la versión más reciente
+  flutter_glow: ^0.2.0
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

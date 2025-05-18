@@ -25,7 +25,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
   @override
   void initState() {
     super.initState();
-    _client = Client().setEndpoint(AppwriteConstants.endpoint).setProject(AppwriteConstants.projectId);
+    _client = Client()
+        .setEndpoint(AppwriteConstants.endpoint)
+        .setProject(AppwriteConstants.projectId);
     _communityService = CommunityService(client: _client);
     _authService = AuthService();
     _loadCurrentUser();
@@ -49,7 +51,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   Future<void> _createPost() async {
     if (_userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No se pudo obtener el ID del usuario.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo obtener el ID del usuario.')),
+      );
       return;
     }
 
@@ -57,64 +61,118 @@ class _CreatePostPageState extends State<CreatePostPage> {
     String? imageUrl;
 
     if (_selectedImage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Subiendo imagen...')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Subiendo imagen...')),
+      );
       imageUrl = await _communityService.uploadImage(_selectedImage!);
       if (imageUrl == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al subir la imagen.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al subir la imagen.')),
+        );
         return;
       }
-      print('URL de la imagen subida: $imageUrl');
     } else if (text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('La publicación debe tener texto o una imagen.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('La publicación debe tener texto o una imagen.')),
+      );
       return;
     }
 
     final post = await _communityService.createPost(_userId!, text, imageUrl);
     if (post != null) {
-      Navigator.pop(context); // Volver a la página de la comunidad después de crear la publicación
+      Navigator.pop(context);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al crear la publicación.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al crear la publicación.')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Crear Publicación'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            TextField(
-              controller: _textController,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                hintText: 'Escribe algo...',
-                border: OutlineInputBorder(),
+    return Theme(
+      data: ThemeData.dark(),
+      child: Scaffold(
+        backgroundColor: const Color(0xFF1A1A1B),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF1A1A1B),
+          title: const Text('Crear publicación'),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Card(
+            color: const Color(0xFF272729),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: _textController,
+                    maxLines: 6,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: '¿Qué estás pensando?',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      filled: true,
+                      fillColor: const Color(0xFF1A1A1B),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton.icon(
+                    onPressed: _pickImage,
+                    icon: const Icon(Icons.image, color: Colors.white),
+                    label: const Text('Agregar Imagen',
+                        style: TextStyle(color: Colors.white)),
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF3A3A3C),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  if (_selectedImage != null) ...[
+                    const SizedBox(height: 16),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        _selectedImage!,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _createPost,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFd93a00), // estilo Reddit
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Publicar',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: const Text('Seleccionar Imagen (Galería)'),
-            ),
-            if (_selectedImage != null) ...[
-              const SizedBox(height: 16.0),
-              Image.file(
-                _selectedImage!,
-                height: 200,
-                fit: BoxFit.cover,
-              ),
-            ],
-            const SizedBox(height: 24.0),
-            ElevatedButton(
-              onPressed: _createPost,
-              child: const Text('Publicar'),
-            ),
-          ],
+          ),
         ),
       ),
     );

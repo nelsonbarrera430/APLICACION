@@ -19,7 +19,7 @@ class AnsiedadButtons extends StatelessWidget {
         ElevatedButton(
           onPressed: onEjerciciosPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue.shade400,
+            backgroundColor: const Color.fromARGB(255, 255, 119, 0),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 15),
           ),
