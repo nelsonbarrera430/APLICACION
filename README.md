@@ -61,9 +61,9 @@ datos a tener en cuenta:
 al subirce a github se genera un error en la api de la IA entonces cambiar el APIKEY por este:
 * SE ENCUENTRA EN EL BLOCK DE NOTAS QUE ESTA EN EL CAMPUS
 
-apartado donde se debe cambiar el APIKEY (services): final String _apiKey = APIKEY DEL BLOCK DE NOTAS
-* preguntas_ia
-* chat_ia
+apartado donde se debe cambiar el APIKEY (services): final String _apiKey = APIKEY DEL BLOCK DE NOTAS , en estos arcivhos:
+* preguntas_ia_service.dart
+* chat_ia_service.dart
 
 
 Este proyecto utiliza las siguientes dependencias clave para su funcionamiento, según se definen en pubspec.yaml:
