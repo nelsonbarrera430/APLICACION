@@ -1,4 +1,4 @@
-v# 🧘 MindCalm: Tu Compañero de Bienestar Mental
+### 🧘 MindCalm: Tu Compañero de Bienestar Mental
 
 MindCalm es una aplicación móvil desarrollada con Flutter cuyo objetivo es ofrecer un soporte integral para la gestión de la ansiedad y el estrés. La aplicación permite a los usuarios monitorear su estado emocional, interactuar con un chatbot inteligente, realizar ejercicios de respiración guiados y conectarse con una comunidad de apoyo.
 
