@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/ansiedad_buttons.dart';
+import 'ansiedad_buttons.dart';
 
 class HistorialAnsiedadAcciones extends StatelessWidget {
   final int puntajeAnsiedad;

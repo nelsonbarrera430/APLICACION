@@ -1,4 +1,3 @@
-// widgets/cuestionario_cargando.dart
 import 'package:flutter/material.dart';
 
 class CuestionarioCargando extends StatelessWidget {

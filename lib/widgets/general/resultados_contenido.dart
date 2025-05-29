@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../widgets/historial_ansiedad_titulo.dart';
-import '../widgets/ansiedad_chart.dart';
-import '../widgets/ansiedad_chart_options.dart';
-import '../widgets/ansiedad_info.dart';
-import '../widgets/historial_ansiedad_acciones.dart';
+import '../ansiedad/historial_ansiedad_titulo.dart';
+import '../ansiedad/ansiedad_chart.dart';
+import '../ansiedad/ansiedad_chart_options.dart';
+import '../ansiedad/ansiedad_info.dart';
+import '../ansiedad/historial_ansiedad_acciones.dart';
 
 class ResultadosContenido extends StatelessWidget {
   final List<Map<String, dynamic>> historialPromediosDiarios;

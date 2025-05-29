@@ -1,9 +1,9 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
-import 'appwrite_client.dart'; // importa el client directamente
+import 'appwrite_client.dart'; 
 
 class AuthService {
-  final Account _account = Account(client); // usa directamente el 'client' importado
+  final Account _account = Account(client); 
 
   Future<models.User> register(String email, String password, String name) async {
     return await _account.create(
@@ -15,7 +15,7 @@ class AuthService {
   }
 
   Future<models.Session> login(String email, String password) async {
-    return await _account.createEmailPasswordSession( // nombre correcto del método
+    return await _account.createEmailPasswordSession( 
       email: email,
       password: password,
     );

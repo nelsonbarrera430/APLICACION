@@ -17,7 +17,7 @@ class CommunityService {
   String get commentsCollectionId => AppwriteConstants.commentsCollectionId;
   String get likesCollectionId => AppwriteConstants.likesCollectionId;
 
-  // Obtener publicaciones ordenadas por fecha de creación
+  
   Future<List<Document>> getPosts() async {
     try {
       final response = await _databases.listDocuments(

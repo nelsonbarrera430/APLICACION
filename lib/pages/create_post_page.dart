@@ -1,10 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:appwrite/appwrite.dart';
-import '../appwrite/community_service.dart';
-import '../appwrite/auth_service.dart';
-import '../appwrite/constants.dart';
+import '../controllers/create_post_controller.dart';
 
 class CreatePostPage extends StatefulWidget {
   const CreatePostPage({super.key});
@@ -14,74 +10,43 @@ class CreatePostPage extends StatefulWidget {
 }
 
 class _CreatePostPageState extends State<CreatePostPage> {
-  final TextEditingController _textController = TextEditingController();
-  File? _selectedImage;
-  final ImagePicker _picker = ImagePicker();
-  late final Client _client;
-  late final CommunityService _communityService;
-  late final AuthService _authService;
-  String? _userId;
+  late final CreatePostController controller;
 
   @override
   void initState() {
     super.initState();
-    _client = Client()
-        .setEndpoint(AppwriteConstants.endpoint)
-        .setProject(AppwriteConstants.projectId);
-    _communityService = CommunityService(client: _client);
-    _authService = AuthService();
-    _loadCurrentUser();
+    controller = CreatePostController();
+    controller.loadCurrentUser().then((_) => setState(() {}));
   }
 
-  Future<void> _loadCurrentUser() async {
-    final user = await _authService.getCurrentUser();
-    setState(() {
-      _userId = user?.$id;
-    });
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
-    }
+    await controller.pickImage();
+    setState(() {});
   }
 
   Future<void> _createPost() async {
-    if (_userId == null) {
+    if (controller.userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No se pudo obtener el ID del usuario.')),
       );
       return;
     }
 
-    final text = _textController.text.trim();
-    String? imageUrl;
-
-    if (_selectedImage != null) {
+    if (controller.selectedImage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Subiendo imagen...')),
       );
-      imageUrl = await _communityService.uploadImage(_selectedImage!);
-      if (imageUrl == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al subir la imagen.')),
-        );
-        return;
-      }
-    } else if (text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('La publicación debe tener texto o una imagen.')),
-      );
-      return;
     }
 
-    final post = await _communityService.createPost(_userId!, text, imageUrl);
-    if (post != null) {
-      Navigator.pop(context);
+    final success = await controller.createPost();
+    if (success) {
+      if (mounted) Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error al crear la publicación.')),
@@ -115,7 +80,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextField(
-                    controller: _textController,
+                    controller: controller.textController,
                     maxLines: 6,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
@@ -143,12 +108,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
                       ),
                     ),
                   ),
-                  if (_selectedImage != null) ...[
+                  if (controller.selectedImage != null) ...[
                     const SizedBox(height: 16),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.file(
-                        _selectedImage!,
+                        controller.selectedImage!,
                         height: 200,
                         fit: BoxFit.cover,
                       ),

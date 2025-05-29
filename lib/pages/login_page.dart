@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import '../appwrite/auth_service.dart';
 import 'home_page.dart';
 import 'register_page.dart';
-import '../widgets/login_background.dart'; 
-import '../widgets/login_title.dart';
-import '../widgets/login_text_field.dart';
-import '../widgets/login_button.dart';
-import '../widgets/register_text_button.dart';
+import '../widgets/login/login_background.dart'; 
+import '../widgets/login/login_title.dart';
+import '../widgets/login/login_text_field.dart';
+import '../widgets/login/login_button.dart';
+import '../widgets/general/register_text_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

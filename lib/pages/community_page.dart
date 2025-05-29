@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import '../appwrite/community_service.dart';
-import '../widgets/post_card.dart';
+import '../widgets/cards/post_card.dart';
 import 'create_post_page.dart';
 import '../appwrite/constants.dart';
 import '../appwrite/auth_service.dart';

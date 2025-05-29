@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../appwrite/community_service.dart';
+import '../../appwrite/community_service.dart';
 
 class PostCardRedditStyle extends StatelessWidget {
   final Map<String, dynamic> post;

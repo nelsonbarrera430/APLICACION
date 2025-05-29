@@ -4,10 +4,10 @@ import '../appwrite/results_service.dart';
 import 'resultados_page.dart';
 import '../services/preguntas_ia_service.dart';
 import 'package:intl/intl.dart';
-import '../widgets/pregunta_card.dart';
-import '../widgets/cuestionario_botones.dart';
-import '../widgets/cuestionario_cargando.dart';
-import '../widgets/cuestionario_completado_hoy.dart';
+import '../widgets/questionnaires/pregunta_card.dart';
+import '../widgets/questionnaires/cuestionario_botones.dart';
+import '../widgets/questionnaires/cuestionario_cargando.dart';
+import '../widgets/questionnaires/cuestionario_completado_hoy.dart';
 
 class PreguntasPage extends StatefulWidget {
   final Client client;
@@ -88,7 +88,7 @@ class _PreguntasPageState extends State<PreguntasPage> {
 
   Widget _construirPantalla() {
     return Scaffold(
-      // AppBar eliminado completamente
+      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<bool>(

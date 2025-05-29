@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/breathing_timer.dart';
-import '../widgets/circular_breathing_design.dart'; // Importa el nuevo diseño
+import '../widgets/breathing_exercises/circular_breathing_design.dart'; // Importa el nuevo diseño
 
 class BreathingExercisePage extends StatefulWidget {
   @override

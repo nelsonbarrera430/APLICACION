@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../appwrite/community_service.dart';
-import '../pages/post_detail_page.dart';
+import '../../appwrite/community_service.dart';
+import '../../pages/post_detail_page.dart';
 
 class PostCard extends StatefulWidget {
   final Map<String, dynamic>? post;

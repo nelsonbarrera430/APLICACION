@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/chat_ia_service.dart';
-import '../widgets/chatbot_message.dart';
-import '../widgets/chatbot_input.dart';
+import '../widgets/chatbot/chatbot_message.dart';
+import '../widgets/chatbot/chatbot_input.dart';
+import '../controllers/chatbot_controller.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({Key? key}) : super(key: key);
@@ -11,55 +11,24 @@ class ChatbotScreen extends StatefulWidget {
 }
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
-  final TextEditingController _controller = TextEditingController();
-  final List<Map<String, dynamic>> _messages = [];
-  final ChatIAService _chatService = ChatIAService();
-  bool _isTyping = false;
-  final ScrollController _scrollController = ScrollController();
+  late final ChatbotController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = ChatbotController();
+  }
 
   @override
   void dispose() {
     _controller.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
-  void _sendMessage() async {
-    final text = _controller.text.trim();
-    if (text.isEmpty) return;
-
-    setState(() {
-      _messages.add({'role': 'user', 'text': text});
-      _isTyping = true;
-      _controller.clear();
+  void _sendMessage() {
+    _controller.sendMessage(() {
+      setState(() {});
     });
-
-    try {
-      final response = await _chatService.enviarMensaje(text);
-      setState(() {
-        _messages.add({'role': 'bot', 'text': response});
-      });
-    } catch (error) {
-      setState(() {
-        _messages.add({
-          'role': 'bot',
-          'text':
-              'Hubo un problema al obtener la respuesta. Intenta de nuevo.',
-        });
-      });
-      print('Error al enviar mensaje: $error');
-    } finally {
-      setState(() {
-        _isTyping = false;
-      });
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      });
-    }
   }
 
   @override
@@ -83,15 +52,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 children: [
                   CircleAvatar(
                     backgroundColor: Colors.white,
-                    radius: 50, // Increased radius for a larger circle
+                    radius: 50,
                     child: Padding(
-                      padding: EdgeInsets.zero, // Removed padding for the image to fill more space
+                      padding: EdgeInsets.zero,
                       child: ClipOval(
                         child: Image.asset(
                           'assets/images/chip.png',
-                          fit: BoxFit.cover, // Cover the area, may crop edges
-                          width: 100, // Match the diameter of the CircleAvatar
-                          height: 100, // Match the diameter of the CircleAvatar
+                          fit: BoxFit.cover,
+                          width: 100,
+                          height: 100,
                         ),
                       ),
                     ),
@@ -105,17 +74,17 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           // Messages
           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _messages.length,
+              controller: _controller.scrollController,
+              itemCount: _controller.messages.length,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               itemBuilder: (context, index) {
-                return ChatbotMessage(message: _messages[index]);
+                return ChatbotMessage(message: _controller.messages[index]);
               },
             ),
           ),
 
           // Typing indicator
-          if (_isTyping)
+          if (_controller.isTyping)
             const Padding(
               padding: EdgeInsets.only(bottom: 8.0, left: 16.0),
               child: Row(
@@ -131,7 +100,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
           // Input
           ChatbotInput(
-            controller: _controller,
+            controller: _controller.textController,
             onSendMessage: _sendMessage,
           ),
         ],

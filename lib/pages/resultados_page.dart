@@ -6,7 +6,7 @@ import '../data/ejercicios_respiracion.dart';
 import '../models/ejercicio_respiracion.dart';
 import 'breathing_exercises_page.dart';
 import 'emergency_page.dart';
-import '../widgets/resultados_contenido.dart';
+import '../widgets/general/resultados_contenido.dart';
 
 class ResultadosPage extends StatefulWidget {
   final Client client;

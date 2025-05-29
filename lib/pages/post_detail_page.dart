@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:appwrite/models.dart';
+import '../controllers/post_detail_controller.dart';
 import '../appwrite/community_service.dart';
-import '../appwrite/auth_service.dart';
-import '../widgets/CommentCard.dart'; // Importa el widget
+import '../widgets/cards/CommentCard.dart';
 
 class PostDetailPage extends StatefulWidget {
   final String postId;
@@ -19,42 +19,23 @@ class PostDetailPage extends StatefulWidget {
 }
 
 class _PostDetailPageState extends State<PostDetailPage> {
-  late Future<List<Document>> _commentsFuture;
-  final TextEditingController _commentController = TextEditingController();
-  final AuthService _authService = AuthService();
-  String? _currentUserId;
+  late PostDetailController _controller;
 
   @override
   void initState() {
     super.initState();
-    _loadCurrentUser();
-    _commentsFuture = widget.communityService.getCommentsForPost(widget.postId);
-  }
-
-  Future<void> _loadCurrentUser() async {
-    final user = await _authService.getCurrentUser();
-    setState(() {
-      _currentUserId = user?.$id;
+    _controller = PostDetailController(
+      postId: widget.postId,
+      communityService: widget.communityService,
+    );
+    _controller.loadCurrentUser().then((_) {
+      setState(() {}); 
     });
-  }
-
-  Future<void> _createComment() async {
-    if (_currentUserId != null && _commentController.text.isNotEmpty) {
-      await widget.communityService.createComment(
-        widget.postId,
-        _currentUserId!,
-        _commentController.text,
-      );
-      _commentController.clear();
-      setState(() {
-        _commentsFuture = widget.communityService.getCommentsForPost(widget.postId);
-      });
-    }
   }
 
   @override
   void dispose() {
-    _commentController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -70,7 +51,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         children: [
           Expanded(
             child: FutureBuilder<List<Document>>(
-              future: _commentsFuture,
+              future: _controller.commentsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator(color: Colors.deepOrange));
@@ -122,11 +103,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: _commentController,
+                      controller: _controller.commentController,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: 'Escribe un comentario...',
-                        hintStyle: TextStyle(color: Colors.white54),
+                        hintStyle: const TextStyle(color: Colors.white54),
                         filled: true,
                         fillColor: Colors.grey[850],
                         border: OutlineInputBorder(
@@ -142,7 +123,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     backgroundColor: Colors.deepOrange,
                     child: IconButton(
                       icon: const Icon(Icons.send, color: Colors.white),
-                      onPressed: _createComment,
+                      onPressed: () => _controller.createComment(() {
+                        setState(() {});
+                      }),
                     ),
                   ),
                 ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/ejercicio_respiracion.dart';
+import '../controllers/breathing_exercises_controller.dart';
 
 class BreathingExercisesPage extends StatefulWidget {
   final List<EjercicioRespiracion> ejercicios;
@@ -11,27 +12,18 @@ class BreathingExercisesPage extends StatefulWidget {
 }
 
 class _BreathingExercisesPageState extends State<BreathingExercisesPage> {
-  final Map<int, String> gifUrls = {};
+  late BreathingExercisesController _controller;
 
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < widget.ejercicios.length; i++) {
-      gifUrls[i] = widget.ejercicios[i].gifUrl;
-    }
-  }
-
-  void _resetGif(int index) {
-    setState(() {
-      gifUrls[index] =
-          "${widget.ejercicios[index].gifUrl}?${DateTime.now().millisecondsSinceEpoch}";
-    });
+    _controller = BreathingExercisesController(ejercicios: widget.ejercicios);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Fondo oscuro
+      backgroundColor: const Color(0xFF121212),
       body: SafeArea(
         child: ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -78,7 +70,7 @@ class _BreathingExercisesPageState extends State<BreathingExercisesPage> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        gifUrls[index]!,
+                        _controller.gifUrls[index]!,
                         height: 200,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -104,7 +96,11 @@ class _BreathingExercisesPageState extends State<BreathingExercisesPage> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
-                        onPressed: () => _resetGif(index),
+                        onPressed: () {
+                          setState(() {
+                            _controller.resetGif(index);
+                          });
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color.fromARGB(255, 255, 115, 0),
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
