@@ -55,7 +55,7 @@ cd APLICACION
 depues:
 flutter pub get
 flutter run
----
+
 datos a tener en cuenta:
 ---
 al subirce a github se genera un error en la api de la IA entonces cambiar el APIKEY por este:
