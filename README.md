@@ -56,6 +56,15 @@ depues:
 flutter pub get
 flutter run
 ---
+datos a tener en cuenta:
+---
+al subirce a github se genera un error en la api de la IA entonces cambiar el APIKEY por este:
+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
+
+apartado donde se debe cambiar el APIKEY (services):
+archvios: 
+chat_ia
+preguntas_ia
 
 Este proyecto utiliza las siguientes dependencias clave para su funcionamiento, según se definen en pubspec.yaml:
 
