@@ -47,7 +47,7 @@ Monitoreo y Visualización de Progreso: Almacenamiento de datos históricos de b
 Contactos de Emergencia: Funcionalidad para gestionar y acceder rápidamente a contactos importantes en situaciones de crisis.
 ---
 clonacion:
-git clone https://github.com/nelsonbarrera430/APLICACION.git
+git clone https://github.com/nelsonbarrera430/APLICACION.git --------------
 cd APLICACION
 
 depues:
