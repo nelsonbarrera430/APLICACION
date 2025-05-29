@@ -45,9 +45,11 @@ Sección de Comunidad: Un espacio para que los usuarios se conecten, compartan e
 Monitoreo y Visualización de Progreso: Almacenamiento de datos históricos de bienestar en Appwrite y representación visual de tendencias a través de gráficos interactivos.
 
 Contactos de Emergencia: Funcionalidad para gestionar y acceder rápidamente a contactos importantes en situaciones de crisis.
+
 ---
 clonacion:
-git clone https://github.com/nelsonbarrera430/APLICACION.git --------------
+---
+git clone https://github.com/nelsonbarrera430/APLICACION.git ///
 cd APLICACION
 
 depues:
