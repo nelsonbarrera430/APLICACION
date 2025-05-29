@@ -59,9 +59,9 @@ flutter run
 datos a tener en cuenta:
 ---
 al subirce a github se genera un error en la api de la IA entonces cambiar el APIKEY por este:
-* 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
+* SE ENCUENTRA EN EL BLOCK DE NOTAS QUE ESTA EN EL CAMPUS
 
-apartado donde se debe cambiar el APIKEY (services):
+apartado donde se debe cambiar el APIKEY (services): final String _apiKey = APIKEY DEL BLOCK DE NOTAS
 * preguntas_ia
 * chat_ia
 
