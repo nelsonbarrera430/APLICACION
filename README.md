@@ -33,7 +33,7 @@ Para poder ejecutar y desarrollar esta aplicación, asegúrate de tener instalad
 * **Gradle:** El proyecto utiliza `gradle-8.10.2-all.zip` (indicado en `gradle-wrapper.properties`) con `Android Gradle Plugin` versión `8.7.0`.
 * **Nota:** Si encuentras errores de Gradle al ejecutar en un dispositivo físico, verifica la configuración de tu `minSdk` y `targetSdk` en `android/app/build.gradle`.
 ---
-##✨ Características Principales
+✨ Características Principales
 Cuestionarios de Bienestar Diarios: Preguntas generadas por Inteligencia Artificial (IA) para monitorear y evaluar el estado emocional del usuario.
 
 Chatbot Interactivo: Un compañero de conversación inteligente que ofrece apoyo, consejos y herramientas de afrontamiento en tiempo real.
@@ -46,6 +46,28 @@ Monitoreo y Visualización de Progreso: Almacenamiento de datos históricos de b
 
 Contactos de Emergencia: Funcionalidad para gestionar y acceder rápidamente a contactos importantes en situaciones de crisis.
 ---
+clonacion:
+git clone https://github.com/nelsonbarrera430/APLICACION.git
+cd APLICACION
+
+depues:
+flutter pub get
+flutter run
+---
+
+Este proyecto utiliza las siguientes dependencias clave para su funcionamiento, según se definen en pubspec.yaml:
+
+appwrite: ^15.0.2 – Cliente SDK oficial para interactuar con tu backend de Appwrite.
+cupertino_icons: ^1.0.8 – Proporciona un conjunto de íconos con el estilo de Apple (iOS).
+flutter_echarts: ^2.0.5 – Integra gráficos dinámicos y personalizables en tu aplicación.
+intl: ^0.19.0 – Ofrece funcionalidades de internacionalización y formato de datos (fechas, números).
+image_picker: ^1.0.7 – Permite seleccionar o capturar imágenes desde la galería o cámara.
+cached_network_image: ^3.2.3 – Carga imágenes de red de forma eficiente y las almacena en caché.
+extended_image: ^10.0.1 – Un widget de imagen avanzado con funcionalidades como zoom y rotación.
+visibility_detector: ^0.4.0+2 – Permite detectar cuándo un widget es visible en pantalla.
+flutter_glow: ^0.2.0 – Proporciona efectos visuales de "brillo" para widgets.
+shared_preferences: ^2.0.15 – Permite almacenar datos simples.
+flutter_web_auth_2: ^4.1.0 (desde dependency_overrides) – Gestiona la autenticación Auth y otros flujos de autenticación basados en web.
 
 
 ## ⚙️ Configuración del Backend (Appwrite)
