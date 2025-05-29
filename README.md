@@ -59,25 +59,26 @@ flutter run
 datos a tener en cuenta:
 ---
 al subirce a github se genera un error en la api de la IA entonces cambiar el APIKEY por este:
-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
+* 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
 
 apartado donde se debe cambiar el APIKEY (services):
-archvios: 
-chat_ia Y preguntas_ia
+* preguntas_ia
+* chat_ia
+
 
 Este proyecto utiliza las siguientes dependencias clave para su funcionamiento, según se definen en pubspec.yaml:
-
+---
 * appwrite: ^15.0.2 – Cliente SDK oficial para interactuar con tu backend de Appwrite.
 * cupertino_icons: ^1.0.8 – Proporciona un conjunto de íconos con el estilo de Apple (iOS).
-* *flutter_echarts: ^2.0.5 – Integra gráficos dinámicos y personalizables en tu aplicación.
-* *intl: ^0.19.0 – Ofrece funcionalidades de internacionalización y formato de datos (fechas, números).
-* *image_picker: ^1.0.7 – Permite seleccionar o capturar imágenes desde la galería o cámara.
-* *cached_network_image: ^3.2.3 – Carga imágenes de red de forma eficiente y las almacena en caché.
-* *extended_image: ^10.0.1 – Un widget de imagen avanzado con funcionalidades como zoom y rotación.
-* *visibility_detector: ^0.4.0+2 – Permite detectar cuándo un widget es visible en pantalla.
-* *flutter_glow: ^0.2.0 – Proporciona efectos visuales de "brillo" para widgets.
-* *shared_preferences: ^2.0.15 – Permite almacenar datos simples.
-* *flutter_web_auth_2: ^4.1.0 (desde dependency_overrides) – Gestiona la autenticación Auth y otros flujos de autenticación basados en web.
+* flutter_echarts: ^2.0.5 – Integra gráficos dinámicos y personalizables en tu aplicación.
+* intl: ^0.19.0 – Ofrece funcionalidades de internacionalización y formato de datos (fechas, números).
+* image_picker: ^1.0.7 – Permite seleccionar o capturar imágenes desde la galería o cámara.
+* cached_network_image: ^3.2.3 – Carga imágenes de red de forma eficiente y las almacena en caché.
+* extended_image: ^10.0.1 – Un widget de imagen avanzado con funcionalidades como zoom y rotación.
+* visibility_detector: ^0.4.0+2 – Permite detectar cuándo un widget es visible en pantalla.
+* flutter_glow: ^0.2.0 – Proporciona efectos visuales de "brillo" para widgets.
+* shared_preferences: ^2.0.15 – Permite almacenar datos simples.
+* flutter_web_auth_2: ^4.1.0 (desde dependency_overrides) – Gestiona la autenticación Auth y otros flujos de autenticación basados en web.
 
 ## ⚙️ Configuración del Backend (Appwrite)
 
