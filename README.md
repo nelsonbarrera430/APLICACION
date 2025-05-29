@@ -32,6 +32,20 @@ Para poder ejecutar y desarrollar esta aplicación, asegúrate de tener instalad
 * **Android NDK:** `27.0.12077973` (según tu configuración `ndkVersion` en Gradle).
 * **Gradle:** El proyecto utiliza `gradle-8.10.2-all.zip` (indicado en `gradle-wrapper.properties`) con `Android Gradle Plugin` versión `8.7.0`.
 * **Nota:** Si encuentras errores de Gradle al ejecutar en un dispositivo físico, verifica la configuración de tu `minSdk` y `targetSdk` en `android/app/build.gradle`.
+---
+##✨ Características Principales
+Cuestionarios de Bienestar Diarios: Preguntas generadas por Inteligencia Artificial (IA) para monitorear y evaluar el estado emocional del usuario.
+
+Chatbot Interactivo: Un compañero de conversación inteligente que ofrece apoyo, consejos y herramientas de afrontamiento en tiempo real.
+
+Ejercicios de Respiración Guiados: Herramientas interactivas para ayudar a la relajación, reducir el estrés y controlar la ansiedad a través de patrones de respiración.
+
+Sección de Comunidad: Un espacio para que los usuarios se conecten, compartan experiencias, publiquen contenido y comenten en publicaciones de otros (con funciones de "me gusta").
+
+Monitoreo y Visualización de Progreso: Almacenamiento de datos históricos de bienestar en Appwrite y representación visual de tendencias a través de gráficos interactivos.
+
+Contactos de Emergencia: Funcionalidad para gestionar y acceder rápidamente a contactos importantes en situaciones de crisis.
+---
 
 
 ## ⚙️ Configuración del Backend (Appwrite)
