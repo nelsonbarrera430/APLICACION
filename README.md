@@ -1,4 +1,4 @@
-# 🧘 MindCalm: Tu Compañero de Bienestar Mental
+v# 🧘 MindCalm: Tu Compañero de Bienestar Mental
 
 MindCalm es una aplicación móvil desarrollada con Flutter cuyo objetivo es ofrecer un soporte integral para la gestión de la ansiedad y el estrés. La aplicación permite a los usuarios monitorear su estado emocional, interactuar con un chatbot inteligente, realizar ejercicios de respiración guiados y conectarse con una comunidad de apoyo.
 
@@ -59,12 +59,11 @@ flutter run
 datos a tener en cuenta:
 ---
 al subirce a github se genera un error en la api de la IA entonces cambiar el APIKEY por este:
-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
+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
 
 apartado donde se debe cambiar el APIKEY (services):
 archvios: 
-chat_ia
-preguntas_ia
+chat_ia Y preguntas_ia
 
 Este proyecto utiliza las siguientes dependencias clave para su funcionamiento, según se definen en pubspec.yaml:
 
